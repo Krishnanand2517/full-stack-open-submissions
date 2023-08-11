@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
+import contactService from "./services/contacts";
 
 import Search from "./components/Search";
 import ContactForm from "./components/ContactForm";
@@ -14,10 +14,10 @@ const App = () => {
   const [newFilter, setNewFilter] = useState('');
 
   useEffect(() => {
-    axios
-      .get('http://localhost:3001/persons')
-      .then(response => {
-        setPersons(response.data);
+    contactService
+      .getAll()
+      .then(initialContacts => {
+        setPersons(initialContacts);
       });
   }, []);
 
@@ -42,13 +42,45 @@ const App = () => {
     };
 
     if (persons.filter(person => person.name === newName).length > 0) {
-      alert(`${newName} is already added to the phonebook.`);
+      const message = `${newName} is already added to the phonebook. Replace the old number with the new one?`;
+      if (!window.confirm(message)) {
+        return;
+      }
+
+      const oldContact = persons.find(p => p.name === person.name);
+      const updatedContact = { ...oldContact, phone: person.phone };
+
+      contactService
+        .update(updatedContact.id, updatedContact)
+        .then(returnedContact => {
+          setPersons(persons.map(p => p.name !== updatedContact.name ? p : returnedContact));
+          setNewName('');
+          setNewNumber('');
+        });
+
       return;
     }
 
-    setPersons(persons.concat(person));
-    setNewName('');
-    setNewNumber('');
+    contactService
+      .create(person)
+      .then(returnedPerson => {
+        setPersons(persons.concat(returnedPerson));
+        setNewName('');
+        setNewNumber('');
+      });
+  };
+
+  const deleteContactOf = (id) => {
+    const person = persons.find(p => p.id === id);
+    if (!window.confirm(`Delete ${person.name}`)) {
+      return;
+    }
+
+    contactService
+      .deleteOne(id)
+      .then(response => {
+        setPersons(persons.filter(p => p.id !== id));
+      });
   };
 
   const personsToShow = newFilter ?
@@ -72,7 +104,7 @@ const App = () => {
       />
 
       <h2>Numbers</h2>
-      <Contact contactList={personsToShow} />
+      <Contact contactList={personsToShow} deleteContactOf={deleteContactOf} />
     </div>
   );
 };
