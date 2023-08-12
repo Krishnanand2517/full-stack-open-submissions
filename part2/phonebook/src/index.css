@@ -1,0 +1,13 @@
+.message {
+    color: green;
+    font-size: 20px;
+    background-color: lightgrey;
+    border-style: solid;
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+.redError {
+    color: red;
+}

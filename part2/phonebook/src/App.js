@@ -5,6 +5,20 @@ import Search from "./components/Search";
 import ContactForm from "./components/ContactForm";
 import Contact from "./components/Contact";
 
+const Notification = ({ message, isError }) => {
+  if (message === null) {
+    return null;
+  }
+
+  const styleClass = isError ? "message redError" : "message";
+
+  return (
+    <div className={styleClass}>
+      {message}
+    </div>
+  );
+};
+
 const App = () => {
   const [persons, setPersons] = useState([]);
 
@@ -12,6 +26,17 @@ const App = () => {
   const [newNumber, setNewNumber] = useState('');
 
   const [newFilter, setNewFilter] = useState('');
+
+  const [message, setMessage] = useState(null);
+  const [isError, setIsError] = useState(null);
+
+  const showNotification = (content) => {
+    setMessage(content);
+    setTimeout(() => {
+      setMessage(null);
+      setIsError(false);
+    }, 5000);
+  };
 
   useEffect(() => {
     contactService
@@ -56,6 +81,14 @@ const App = () => {
           setPersons(persons.map(p => p.name !== updatedContact.name ? p : returnedContact));
           setNewName('');
           setNewNumber('');
+          showNotification(`Updated number for ${person.name}`);
+        })
+        .catch(error => {
+          setIsError(true);
+          setPersons(persons.filter(p => p.id !== updatedContact.id));
+          setNewName('');
+          setNewNumber('');
+          showNotification(`Information about ${person.name} has been removed from server`);
         });
 
       return;
@@ -67,6 +100,7 @@ const App = () => {
         setPersons(persons.concat(returnedPerson));
         setNewName('');
         setNewNumber('');
+        showNotification(`Added ${person.name} to phonebook`);
       });
   };
 
@@ -80,6 +114,12 @@ const App = () => {
       .deleteOne(id)
       .then(response => {
         setPersons(persons.filter(p => p.id !== id));
+        showNotification(`Deleted ${person.name} from phonebook`);
+      })
+      .catch(error => {
+        setIsError(true);
+        setPersons(persons.filter(p => p.id !== id));
+        showNotification(`Information about ${person.name} has been removed from server`);
       });
   };
 
@@ -92,6 +132,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={message} isError={isError} />
       <Search filterValue={newFilter} onFilterChange={handleFilterChange} />
 
       <h2>Add New Contact</h2>
