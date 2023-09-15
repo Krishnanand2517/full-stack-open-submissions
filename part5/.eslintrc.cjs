@@ -12,10 +12,18 @@ module.exports = {
   settings: { react: { version: '18.2' } },
   plugins: ['react-refresh'],
   rules: {
+    "indent": [
+      "warning",
+      2
+    ],
     'react-refresh/only-export-components': [
       'warn',
       { allowConstantExport: true },
     ],
+    "arrow-spacing": [
+      "error", { "before": true, "after": true }
+    ],
+    "no-console": 0,
     'react/prop-types': false
   },
 }
