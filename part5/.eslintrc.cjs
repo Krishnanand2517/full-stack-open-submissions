@@ -13,7 +13,7 @@ module.exports = {
   plugins: ['react-refresh'],
   rules: {
     "indent": [
-      "warning",
+      "warn",
       2
     ],
     'react-refresh/only-export-components': [

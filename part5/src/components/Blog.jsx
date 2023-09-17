@@ -10,16 +10,16 @@ const Blog = ({ blog, user, removeBlog, likeBlog }) => {
 
   const blogDetails = () => (
     <div>
-      {blog.url} <br />
-      likes {blog.likes} <button onClick={likeBlog}>like</button> <br />
-      {user.name} <br />
+      <span className="blog-url">{blog.url}</span> <br />
+      <span className="blog-likes">likes {blog.likes}</span> <button onClick={likeBlog}>like</button> <br />
+      <span className="blog-user">{user.name}</span> <br />
       <button onClick={removeBlog}>remove</button>
     </div>
   );
 
   return (
     <div className="blog">
-      <span>{blog.title}</span> by {blog.author}
+      <span className="blog-title">{blog.title}</span> by <span className="blog-author">{blog.author}</span>
       <button onClick={toggleFullView}>
         {fullView ? "hide" : "view"}
       </button>
