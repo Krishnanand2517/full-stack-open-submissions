@@ -42,6 +42,7 @@ const App = () => {
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON);
       setUser(user);
+      blogService.setToken(user.token);
     }
   }, []);
 
@@ -158,7 +159,11 @@ const App = () => {
     <div>
       <Notification message={message} isError={isError} />
       <h2>The Bloglist App</h2>
-      <p>{user.name} logged in <button onClick={handleLogout}>logout</button></p>
+      <p>{user.name} logged in
+        <button id="logout-button" onClick={handleLogout}>
+          logout
+        </button>
+      </p>
 
       {blogForm()}
 
@@ -167,6 +172,7 @@ const App = () => {
         <Blog key={blog.id}
           blog={blog}
           user={blog.user}
+          loggedInUser={user}
           removeBlog={() => removeBlog(blog)}
           likeBlog={() => likeBlog(blog)}
         />
