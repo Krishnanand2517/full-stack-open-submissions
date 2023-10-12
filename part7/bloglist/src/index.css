@@ -1,0 +1,25 @@
+.blog-title {
+    font-weight: bold;
+}
+
+.message {
+    color: green;
+    font-size: 20px;
+    background-color: lightgrey;
+    border-style: solid;
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+.redError {
+    color: red;
+}
+
+.blog {
+    padding-top: 10px;
+    padding-left: 2px;
+    border: solid;
+    border-width: 1px;
+    margin-bottom: 5px;
+}
