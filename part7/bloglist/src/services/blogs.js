@@ -22,13 +22,13 @@ const create = async newObject => {
   return response.data;
 };
 
-const update = async (id, newObject) => {
-  const response = await axios.put(`${baseUrl}/${id}`, newObject, config);
+const update = async (newObject) => {
+  const response = await axios.put(`${baseUrl}/${newObject.id}`, newObject);
   return response.data;
 };
 
-const deleteBlog = async id => {
-  const response = await axios.delete(`${baseUrl}/${id}`, config);
+const deleteBlog = async (blogToDelete) => {
+  const response = await axios.delete(`${baseUrl}/${blogToDelete.id}`);
   return response.data;
 };
 

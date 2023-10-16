@@ -2,7 +2,7 @@ import PropTypes from "prop-types";
 
 import { useState } from "react";
 
-const BlogForm = ({ createBlog }) => {
+const BlogForm = ({ newBlogMutation }) => {
     const [title, setTitle] = useState('');
     const [author, setAuthor] = useState('');
     const [url, setUrl] = useState('');
@@ -10,7 +10,7 @@ const BlogForm = ({ createBlog }) => {
     const addBlog = (event) => {
         event.preventDefault();
 
-        createBlog({
+        newBlogMutation.mutate({
             title: title,
             author: author,
             url: url
@@ -63,7 +63,7 @@ const BlogForm = ({ createBlog }) => {
 };
 
 BlogForm.propTypes = {
-    createBlog: PropTypes.func.isRequired
+    newBlogMutation: PropTypes.object.isRequired
 };
 
 export default BlogForm;

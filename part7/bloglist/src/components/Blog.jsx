@@ -8,7 +8,7 @@ const Blog = ({ blog, user, loggedInUser, removeBlog, likeBlog }) => {
   const toggleFullView = () => {
     setFullView(!fullView);
 
-    if (loggedInUser.name === user.name) {
+    if (loggedInUser.name === user.name || !user.name) {
       setCanDelete(true);
     } else {
       setCanDelete(false);
@@ -25,7 +25,7 @@ const Blog = ({ blog, user, loggedInUser, removeBlog, likeBlog }) => {
     <div>
       <span className="blog-url">{blog.url}</span> <br />
       <span className="blog-likes">likes {blog.likes}</span> <button id="like-button" onClick={likeBlog}>like</button> <br />
-      <span className="blog-user">{user.name}</span> <br />
+      <span className="blog-user">{user.name || loggedInUser.name}</span> <br />
 
       {canDelete ? removeButton() : null}
     </div>
