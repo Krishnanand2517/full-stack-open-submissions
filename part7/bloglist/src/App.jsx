@@ -1,15 +1,21 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNotificationDispatch } from './NotificationContext';
 import { useUserDispatch, useUserValue } from './UserContext';
+import { Routes, Route, useMatch, useNavigate } from 'react-router-dom';
+
+import { Container, Typography } from '@mui/material';
 
 import Notification from './components/Notification';
-import Togglable from './components/Togglable';
-import Blog from './components/Blog';
 import LoginForm from './components/LoginForm';
-import BlogForm from './components/BlogForm';
 import blogService from './services/blogs';
 import loginService from './services/login';
+import userService from './services/users';
+import BlogList from './components/BlogList';
+import Users from './components/Users';
+import User from './components/User';
+import BlogView from './components/BlogView';
+import NavMenu from './components/NavMenu';
 
 
 const App = () => {
@@ -17,6 +23,7 @@ const App = () => {
   const userDispatch = useUserDispatch();
   const userValue = useUserValue();
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
 
   const newBlogMutation = useMutation(blogService.create, {
     onSuccess: (newBlog) => {
@@ -59,10 +66,25 @@ const App = () => {
     }
   });
 
+  const commentBlogMutation = useMutation(blogService.addComment, {
+    onMutate: (updatedBlog) => {
+      const blogs = queryClient.getQueryData(['blogs']);
+      queryClient.setQueryData(['blogs'], blogs.map(
+        blog => blog.id === updatedBlog.id ? updatedBlog : blog
+      ));
+
+      showNotification(`Successfully commented!`);
+    },
+    onError: (error) => {
+      queryClient.invalidateQueries(['blogs']);
+      showNotification("could not comment", true);
+    }
+  });
+
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [comment, setComment] = useState('');
 
-  const blogFormRef = useRef();
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedBloglistUser');
@@ -90,6 +112,20 @@ const App = () => {
       return;
     }
     deleteBlogMutation.mutate(blogToDelete);
+
+    navigate('/');
+  };
+
+  const addComment = async (blogToComment) => {
+    const updatedBlog = {
+      ...blogToComment,
+      comments: blogToComment.comments.concat(comment)
+    };
+
+    // commentBlogMutation.mutate({ id: blogToComment.id, comments: updatedBlog.comments });
+    commentBlogMutation.mutate(updatedBlog);
+    console.log(blogToComment.comments.concat(comment));
+    setComment('');
   };
 
   const handleLogin = async (event) => {
@@ -119,6 +155,7 @@ const App = () => {
     window.location.reload();
   };
 
+
   const loginForm = () => (
     <LoginForm
       username={username}
@@ -129,29 +166,49 @@ const App = () => {
     />
   );
 
-  const blogForm = () => (
-    <Togglable buttonLabel="new note" ref={blogFormRef}>
-      <BlogForm newBlogMutation={newBlogMutation} />
-    </Togglable>
-  );
-
-
-  const result = useQuery({
+  const blogsResult = useQuery({
     queryKey: ['blogs'],
     queryFn: blogService.getAll,
     retry: 1,
     refetchOnWindowFocus: false
   });
 
-  if (result.isLoading) {
+  const usersResult = useQuery({
+    queryKey: ['users'],
+    queryFn: userService.getAll,
+    retry: 1,
+    refetchOnWindowFocus: false
+  });
+
+  const matchUser = useMatch('/users/:id');
+  const matchBlog = useMatch('/blogs/:id');
+
+  if (blogsResult.isLoading) {
     return <div>Loading blogs...</div>
   }
 
-  if (result.isError) {
+  if (blogsResult.isError) {
     return <div>Blog service not available</div>
   }
 
-  const blogs = result.data;
+  if (usersResult.isLoading) {
+    return <div>Loading users...</div>
+  }
+
+  if (usersResult.isError) {
+    return <div>Users service not available</div>
+  }
+
+  const blogs = blogsResult.data;
+  const users = usersResult.data;
+
+  const user = matchUser
+    ? users.find(user => user.id === matchUser.params.id)
+    : null;
+
+  const blog = matchBlog
+    ? blogs.find(blog => blog.id === matchBlog.params.id)
+    : null;
 
   if (!userValue) {
     return (
@@ -162,31 +219,29 @@ const App = () => {
     );
   }
 
-  const sortByLikes = (a, b) => b.likes - a.likes;
-
   return (
-    <div>
-      <Notification />
-      <h2>The Bloglist App</h2>
-      <p>{userValue.name} logged in
-        <button id="logout-button" onClick={handleLogout}>
-          logout
-        </button>
-      </p>
+    <Container>
+      <div>
+        <NavMenu loggedInUser={userValue} handleLogout={handleLogout} />
+        <Notification />
+        <Typography variant='h4' sx={{ mt: 1.5 }} gutterBottom>The Bloglist App</Typography>
 
-      {blogForm()}
-
-      <h2>Blogs</h2>
-      {blogs.sort(sortByLikes).map(blog =>
-        <Blog key={blog.id}
-          blog={blog}
-          user={blog.user}
-          loggedInUser={userValue}
-          removeBlog={() => removeBlog(blog)}
-          likeBlog={() => likeBlog(blog)}
-        />
-      )}
-    </div>
+        <Routes>
+          <Route path="/blogs/:id" element={<BlogView
+            blog={blog}
+            likeBlog={() => likeBlog(blog)}
+            removeBlog={() => removeBlog(blog)}
+            loggedInUser={userValue}
+            comment={comment}
+            handleCommentChange={({ target }) => setComment(target.value)}
+            postComment={addComment}
+          />} />
+          <Route path="/users/:id" element={<User user={user} />} />
+          <Route path="/users" element={<Users users={users} />} />
+          <Route path="/" element={<BlogList blogs={blogs} newBlogMutation={newBlogMutation} />} />
+        </Routes>
+      </div>
+    </Container>
   );
 };
 

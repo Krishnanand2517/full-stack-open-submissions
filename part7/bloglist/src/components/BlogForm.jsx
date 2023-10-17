@@ -1,6 +1,7 @@
-import PropTypes from "prop-types";
+import PropTypes from 'prop-types';
+import { useState } from 'react';
 
-import { useState } from "react";
+import { Button, TextField, Typography } from '@mui/material';
 
 const BlogForm = ({ newBlogMutation }) => {
     const [title, setTitle] = useState('');
@@ -23,13 +24,14 @@ const BlogForm = ({ newBlogMutation }) => {
 
     return (
         <div>
-            <h2>Create New Entry</h2>
+            <Typography variant='h5' gutterBottom>Create New Entry</Typography>
 
             <form onSubmit={addBlog}>
                 <div>
-                    Title:
-                    <input
-                        type="text"
+                    <TextField
+                        label="Title"
+                        variant='standard'
+                        size='small'
                         value={title}
                         name="Title"
                         id="blog-title"
@@ -37,9 +39,10 @@ const BlogForm = ({ newBlogMutation }) => {
                     />
                 </div>
                 <div>
-                    Author:
-                    <input
-                        type="text"
+                    <TextField
+                        label="Author"
+                        variant='standard'
+                        size='small'
                         value={author}
                         name="Author"
                         id="blog-author"
@@ -47,16 +50,20 @@ const BlogForm = ({ newBlogMutation }) => {
                     />
                 </div>
                 <div>
-                    URL:
-                    <input
-                        type="text"
+                    <TextField
+                        label="URL"
+                        variant='standard'
+                        size='small'
                         value={url}
                         name="URL"
                         id="blog-url"
                         onChange={({ target }) => setUrl(target.value)}
                     />
                 </div>
-                <button id="create-btn" type="submit">create</button>
+                <br />
+                <Button variant='contained' color='secondary' id="create-btn" type="submit">
+                    create
+                </Button>
             </form>
         </div>
     );

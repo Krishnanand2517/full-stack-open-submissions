@@ -1,4 +1,5 @@
-import PropTypes from "prop-types";
+import { Button, Container, TextField } from '@mui/material';
+import PropTypes from 'prop-types';
 
 const LoginForm = ({
     handleSubmit,
@@ -8,33 +9,40 @@ const LoginForm = ({
     password
 }) => {
     return (
-        <div>
-            <h2>Login to the application</h2>
+        <Container>
+            <div>
+                <h2>Login to the application</h2>
 
-            <form onSubmit={handleSubmit}>
-                <div>
-                    Username:
-                    <input
-                        type="text"
-                        value={username}
-                        name="Username"
-                        id="username"
-                        onChange={handleUsernameChange}
-                    />
-                </div>
-                <div>
-                    Password:
-                    <input
-                        type="password"
-                        value={password}
-                        name="Password"
-                        id="password"
-                        onChange={handlePasswordChange}
-                    />
-                </div>
-                <button id="login-button" type="submit">Login</button>
-            </form>
-        </div>
+                <form onSubmit={handleSubmit}>
+                    <div>
+                        <TextField
+                            label="Username"
+                            size='small'
+                            value={username}
+                            name="Username"
+                            id="username"
+                            onChange={handleUsernameChange}
+                        />
+                    </div>
+                    <br />
+                    <div>
+                        <TextField
+                            label="Password"
+                            type="password"
+                            size='small'
+                            value={password}
+                            name="Password"
+                            id="password"
+                            onChange={handlePasswordChange}
+                        />
+                    </div>
+                    <br />
+                    <Button variant='contained' color='success' id="login-button" type="submit">
+                        Login
+                    </Button>
+                </form>
+            </div>
+        </Container>
     );
 };
 
