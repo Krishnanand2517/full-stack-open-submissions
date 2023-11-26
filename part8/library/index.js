@@ -23,83 +23,83 @@ mongoose
     console.log("Error connecting to MongoDB:", error.message);
   });
 
-let authors = [
-  {
-    name: "Robert Martin",
-    id: "afa51ab0-344d-11e9-a414-719c6709cf3e",
-    born: 1952,
-  },
-  {
-    name: "Martin Fowler",
-    id: "afa5b6f0-344d-11e9-a414-719c6709cf3e",
-    born: 1963,
-  },
-  {
-    name: "Fyodor Dostoevsky",
-    id: "afa5b6f1-344d-11e9-a414-719c6709cf3e",
-    born: 1821,
-  },
-  {
-    name: "Joshua Kerievsky", // birthyear not known
-    id: "afa5b6f2-344d-11e9-a414-719c6709cf3e",
-  },
-  {
-    name: "Sandi Metz", // birthyear not known
-    id: "afa5b6f3-344d-11e9-a414-719c6709cf3e",
-  },
-];
+// let authors = [
+//   {
+//     name: "Robert Martin",
+//     id: "afa51ab0-344d-11e9-a414-719c6709cf3e",
+//     born: 1952,
+//   },
+//   {
+//     name: "Martin Fowler",
+//     id: "afa5b6f0-344d-11e9-a414-719c6709cf3e",
+//     born: 1963,
+//   },
+//   {
+//     name: "Fyodor Dostoevsky",
+//     id: "afa5b6f1-344d-11e9-a414-719c6709cf3e",
+//     born: 1821,
+//   },
+//   {
+//     name: "Joshua Kerievsky", // birthyear not known
+//     id: "afa5b6f2-344d-11e9-a414-719c6709cf3e",
+//   },
+//   {
+//     name: "Sandi Metz", // birthyear not known
+//     id: "afa5b6f3-344d-11e9-a414-719c6709cf3e",
+//   },
+// ];
 
-let books = [
-  {
-    title: "Clean Code",
-    published: 2008,
-    author: "Robert Martin",
-    id: "afa5b6f4-344d-11e9-a414-719c6709cf3e",
-    genres: ["refactoring"],
-  },
-  {
-    title: "Agile software development",
-    published: 2002,
-    author: "Robert Martin",
-    id: "afa5b6f5-344d-11e9-a414-719c6709cf3e",
-    genres: ["agile", "patterns", "design"],
-  },
-  {
-    title: "Refactoring, edition 2",
-    published: 2018,
-    author: "Martin Fowler",
-    id: "afa5de00-344d-11e9-a414-719c6709cf3e",
-    genres: ["refactoring"],
-  },
-  {
-    title: "Refactoring to patterns",
-    published: 2008,
-    author: "Joshua Kerievsky",
-    id: "afa5de01-344d-11e9-a414-719c6709cf3e",
-    genres: ["refactoring", "patterns"],
-  },
-  {
-    title: "Practical Object-Oriented Design, An Agile Primer Using Ruby",
-    published: 2012,
-    author: "Sandi Metz",
-    id: "afa5de02-344d-11e9-a414-719c6709cf3e",
-    genres: ["refactoring", "design"],
-  },
-  {
-    title: "Crime and punishment",
-    published: 1866,
-    author: "Fyodor Dostoevsky",
-    id: "afa5de03-344d-11e9-a414-719c6709cf3e",
-    genres: ["classic", "crime"],
-  },
-  {
-    title: "The Demon ",
-    published: 1872,
-    author: "Fyodor Dostoevsky",
-    id: "afa5de04-344d-11e9-a414-719c6709cf3e",
-    genres: ["classic", "revolution"],
-  },
-];
+// let books = [
+//   {
+//     title: "Clean Code",
+//     published: 2008,
+//     author: "Robert Martin",
+//     id: "afa5b6f4-344d-11e9-a414-719c6709cf3e",
+//     genres: ["refactoring"],
+//   },
+//   {
+//     title: "Agile software development",
+//     published: 2002,
+//     author: "Robert Martin",
+//     id: "afa5b6f5-344d-11e9-a414-719c6709cf3e",
+//     genres: ["agile", "patterns", "design"],
+//   },
+//   {
+//     title: "Refactoring, edition 2",
+//     published: 2018,
+//     author: "Martin Fowler",
+//     id: "afa5de00-344d-11e9-a414-719c6709cf3e",
+//     genres: ["refactoring"],
+//   },
+//   {
+//     title: "Refactoring to patterns",
+//     published: 2008,
+//     author: "Joshua Kerievsky",
+//     id: "afa5de01-344d-11e9-a414-719c6709cf3e",
+//     genres: ["refactoring", "patterns"],
+//   },
+//   {
+//     title: "Practical Object-Oriented Design, An Agile Primer Using Ruby",
+//     published: 2012,
+//     author: "Sandi Metz",
+//     id: "afa5de02-344d-11e9-a414-719c6709cf3e",
+//     genres: ["refactoring", "design"],
+//   },
+//   {
+//     title: "Crime and punishment",
+//     published: 1866,
+//     author: "Fyodor Dostoevsky",
+//     id: "afa5de03-344d-11e9-a414-719c6709cf3e",
+//     genres: ["classic", "crime"],
+//   },
+//   {
+//     title: "The Demon ",
+//     published: 1872,
+//     author: "Fyodor Dostoevsky",
+//     id: "afa5de04-344d-11e9-a414-719c6709cf3e",
+//     genres: ["classic", "revolution"],
+//   },
+// ];
 
 const typeDefs = `
     type User {
@@ -166,7 +166,7 @@ const resolvers = {
     authorCount: async () => Author.collection.countDocuments(),
     allBooks: async (root, args) => {
       if (!args.genre) {
-        return Book.find({});
+        return Book.find({}).populate("author");
       }
 
       const query = {
@@ -175,14 +175,20 @@ const resolvers = {
         },
       };
 
-      return Book.find(query);
+      return Book.find(query).populate("author");
     },
     allAuthors: async () => Author.find({}),
     me: (root, args, context) => context.currentUser,
   },
   Mutation: {
     addBook: async (root, args, context) => {
-      const book = new Book({ ...args });
+      let bookAuthor = await Author.findOne({ name: args.author });
+
+      if (!bookAuthor) {
+        bookAuthor = new Author({ name: args.author });
+      }
+
+      const book = new Book({ ...args, author: bookAuthor });
       const currentUser = context.currentUser;
 
       if (!currentUser) {
@@ -194,6 +200,7 @@ const resolvers = {
       }
 
       try {
+        await bookAuthor.save();
         await book.save();
       } catch (error) {
         throw new GraphQLError("Failed to add the book", {
@@ -275,8 +282,9 @@ const resolvers = {
     },
   },
   Author: {
-    bookCount: (root) => {
-      const booksByAuthor = books.filter((b) => b.author === root.name);
+    bookCount: async (root) => {
+      const books = await Book.find({}).populate("author");
+      const booksByAuthor = books.filter((b) => b.author.name === root.name);
       return booksByAuthor.length;
     },
   },

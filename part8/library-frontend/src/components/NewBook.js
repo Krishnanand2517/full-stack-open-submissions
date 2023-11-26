@@ -1,10 +1,30 @@
 import { useState } from "react";
-import { ALL_AUTHORS, ALL_BOOKS, CREATE_BOOK } from "../queries";
+import {
+  ALL_AUTHORS,
+  ALL_BOOKS,
+  ALL_BOOKS_OF_GENRE,
+  CREATE_BOOK,
+} from "../queries";
 import { useMutation } from "@apollo/client";
 
 const NewBook = (props) => {
   const [createBook] = useMutation(CREATE_BOOK, {
-    refetchQueries: [{ query: ALL_BOOKS }, { query: ALL_AUTHORS }],
+    onError: (error) => {
+      console.log(error.graphQLErrors[0].message);
+    },
+    update: (cache, response) => {
+      cache.updateQuery({ query: ALL_BOOKS }, ({ allBooks }) => {
+        return {
+          allBooks: allBooks.concat(response.data.addBook),
+        };
+      });
+
+      cache.updateQuery({ query: ALL_BOOKS_OF_GENRE }, ({ allBooks }) => {
+        return {
+          allBooks: allBooks.concat(response.data.addBook),
+        };
+      });
+    },
   });
 
   const [title, setTitle] = useState("");
@@ -38,6 +58,7 @@ const NewBook = (props) => {
 
   return (
     <div>
+      <h2>Add New Book</h2>
       <form onSubmit={submit}>
         <div>
           title
