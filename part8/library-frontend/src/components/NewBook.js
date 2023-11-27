@@ -7,23 +7,16 @@ import {
 } from "../queries";
 import { useMutation } from "@apollo/client";
 
+import { updateCache } from "../App";
+
 const NewBook = (props) => {
   const [createBook] = useMutation(CREATE_BOOK, {
     onError: (error) => {
       console.log(error.graphQLErrors[0].message);
     },
     update: (cache, response) => {
-      cache.updateQuery({ query: ALL_BOOKS }, ({ allBooks }) => {
-        return {
-          allBooks: allBooks.concat(response.data.addBook),
-        };
-      });
-
-      cache.updateQuery({ query: ALL_BOOKS_OF_GENRE }, ({ allBooks }) => {
-        return {
-          allBooks: allBooks.concat(response.data.addBook),
-        };
-      });
+      updateCache(cache, { query: ALL_BOOKS }, response.data.addBook);
+      updateCache(cache, { query: ALL_BOOKS_OF_GENRE }, response.data.addBook);
     },
   });
 

@@ -17,6 +17,7 @@ const Books = (props) => {
   }
 
   if (allBooksResult.loading || genreBooksResult.loading) {
+    console.log(genre);
     return <div>Loading...</div>;
   }
 
